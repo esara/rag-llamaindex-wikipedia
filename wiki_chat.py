@@ -8,7 +8,19 @@ from llama_index.core import VectorStoreIndex, Settings
 from llama_index.llms.openai import OpenAI
 from llama_index.readers.wikipedia import WikipediaReader
 
+# OpenTelemetry imports
+from opentelemetry.instrumentation.llamaindex import LlamaIndexInstrumentor
+#from opentelemetry.instrumentation.openai import OpenAIInstrumentor
+from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
+
 load_dotenv()
+
+# Only instrument LlamaIndex once to avoid "already instrumented" error
+# The TracerProvider and exporter are automatically configured by opentelemetry-instrument
+if 'instrumented' not in st.session_state:
+    OpenAIInstrumentor().instrument()
+    LlamaIndexInstrumentor().instrument()
+    st.session_state.instrumented = True
 
 storage_path = "./vectorstore"
 

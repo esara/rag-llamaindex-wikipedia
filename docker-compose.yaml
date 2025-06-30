@@ -5,3 +5,7 @@ services:
       - "8501:8501"
     environment:
       - OPENAI_API_KEY=sk-proj-XYZ
+      - OTEL_SERVICE_NAME=llama-index-workflow-app
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=opentelemetry-collector:4317
+      - OTEL_EXPORTER_OTLP_INSECURE=true
