@@ -1,0 +1,7 @@
+services:
+  rag:
+    image: esara/rag
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=sk-proj-XYZ

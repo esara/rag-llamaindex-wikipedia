@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag
+spec:
+  selector:
+    matchLabels:
+      app: rag-llamaindex-wikipedia
+  template:
+    metadata:
+      labels:
+        app: rag-llamaindex-wikipedia
+    spec:
+      containers:
+        - name: rag
+          image: esara/rag
+          ports:
+            - containerPort: 8501
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: OPENAI_API_KEY
+                  name: rag-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag
+spec:
+  selector:
+    app: rag-llamaindex-wikipedia
+  ports:
+    - name: http
+      port: 8501
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: rag-secret
+data:
+  OPENAI_API_KEY: "XYZ="
