@@ -4,6 +4,13 @@ llama-index-core
 llama-index-llms-openai
 llama-index-readers-wikipedia
 llama-index-embeddings-openai
+# OpenTelemetry dependencies for trace export
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-llamaindex
+#opentelemetry-instrumentation-openai
+opentelemetry-instrumentation-openai-v2
+opentelemetry-semantic-conventions-ai
 wikipedia
 streamlit
 nltk
