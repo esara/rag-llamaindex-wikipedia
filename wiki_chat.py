@@ -3,47 +3,57 @@ import os
 import os.path
 
 from dotenv import load_dotenv
-from llama_index.response.pprint_utils import pprint_response
-from llama_index.llms import OpenAI
-from llama_index import download_loader
-from llama_index import VectorStoreIndex, load_index_from_storage, ServiceContext
-from llama_index.readers import WikipediaReader
+# Updated imports for LlamaIndex v0.10+
+from llama_index.core import VectorStoreIndex, Settings
+from llama_index.llms.openai import OpenAI
+from llama_index.readers.wikipedia import WikipediaReader
 
 load_dotenv()
 
 storage_path = "./vectorstore"
 
-llm = OpenAI(temperature=0.1, model="gpt-4-turbo-preview")
-service_context = ServiceContext.from_defaults(llm=llm)
+# Configure global settings instead of using ServiceContext (deprecated)
+Settings.llm = OpenAI(temperature=0.1, model="gpt-4-turbo-preview")
 
-WikipediaReader = download_loader("WikipediaReader")
-
+# Use WikipediaReader directly - no need for download_loader
 loader = WikipediaReader()
-documents = loader.load_data(pages=['Star Wars Movie', 'Star Trek Movie'])
+# Using specific Wikipedia page titles that definitely exist
+documents = loader.load_data(pages=['Star Wars (film)', 'Star Trek: The Original Series'])
+# documents = loader.load_data(pages=['The Lord of the Rings (film series)', 'https://en.wikipedia.org/wiki/Middle-earth'])
+
+# Create index
 index = VectorStoreIndex.from_documents(documents)
 index.storage_context.persist(persist_dir=storage_path)
 
-
-st.title("Ask the Wiki On Star Wars")
-if "messages" not in st.session_state.keys(): 
+st.title("Ask the Wiki On Star Wars & Star Trek")
+# st.title("Ask the Wiki On Middle Earth and Lord of the Rings")
+if "messages" not in st.session_state.keys():
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ask me a question !"}
+        {"role": "assistant", "content": "Ask me a question about Star Wars or Star Trek!"}
+#         {"role": "assistant", "content": "Ask me a question about Middle Earth or the Lord of the Rings"}
     ]
 
 chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=True)
 
-if prompt := st.chat_input("Your question"): 
+if prompt := st.chat_input("Your question"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-for message in st.session_state.messages: 
+for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
-        
+
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             response = chat_engine.chat(prompt)
             st.write(response.response)
-            pprint_response(response, show_source=True)
+            # Display source information if available
+            if hasattr(response, 'source_nodes') and response.source_nodes:
+                with st.expander("View Sources"):
+                    for i, node in enumerate(response.source_nodes):
+                        st.write(f"**Source {i+1}:**")
+                        st.write(f"Score: {node.score:.3f}")
+                        st.write(f"Content: {node.text[:500]}...")
+                        st.write("---")
             message = {"role": "assistant", "content": response.response}
-            st.session_state.messages.append(message) 
+            st.session_state.messages.append(message)
