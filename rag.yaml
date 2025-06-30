@@ -13,14 +13,14 @@ spec:
     spec:
       containers:
         - name: rag
-          image: esara/rag
+          image: esara/rag:traceloop
           ports:
             - containerPort: 8501
           env:
-            - name: OPENAI_API_KEY
+            - name: TRACELOOP_API_KEY
               valueFrom:
                 secretKeyRef:
-                  key: OPENAI_API_KEY
+                  key: TRACELOOP_API_KEY
                   name: rag-secret
 ---
 apiVersion: v1
@@ -40,4 +40,4 @@ type: Opaque
 metadata:
   name: rag-secret
 data:
-  OPENAI_API_KEY: "XYZ="
+  TRACELOOP_API_KEY: "XYZ="

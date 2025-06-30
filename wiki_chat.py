@@ -10,6 +10,13 @@ from llama_index.readers.wikipedia import WikipediaReader
 
 load_dotenv()
 
+from traceloop.sdk import Traceloop
+
+# Only instrument once to avoid "already instrumented" error
+if 'instrumented' not in st.session_state:
+    Traceloop.init(app_name="llama_index_workflow_app")
+    st.session_state.instrumented = True
+
 storage_path = "./vectorstore"
 
 # Configure global settings instead of using ServiceContext (deprecated)

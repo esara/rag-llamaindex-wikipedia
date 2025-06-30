@@ -4,6 +4,7 @@ llama-index-core
 llama-index-llms-openai
 llama-index-readers-wikipedia
 llama-index-embeddings-openai
+traceloop-sdk
 wikipedia
 streamlit
 nltk

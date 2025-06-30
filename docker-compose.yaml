@@ -1,7 +1,7 @@
 services:
   rag:
-    image: esara/rag
+    image: esara/rag:traceloop
     ports:
       - "8501:8501"
     environment:
-      - OPENAI_API_KEY=sk-proj-XYZ
+      - TRACELOOP_API_KEY=tl_XYZ
