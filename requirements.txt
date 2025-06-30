@@ -1,6 +1,9 @@
 python-dotenv
 openai
-llama-index
+llama-index-core
+llama-index-llms-openai
+llama-index-readers-wikipedia
+llama-index-embeddings-openai
+wikipedia
 streamlit
 nltk
-
