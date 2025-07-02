@@ -7,4 +7,4 @@ DOCKER_TAG = latest
 .PHONY: build
 
 image: build Dockerfile
-	docker buildx build --platform linux/amd64,linux/arm64 --push -t $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):latest .
+	docker buildx build --platform linux/amd64,linux/arm64 --push -t $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):litellm-openai .

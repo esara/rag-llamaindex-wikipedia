@@ -1,9 +1,14 @@
 python-dotenv
-openai
+litellm
 llama-index-core
-llama-index-llms-openai
+llama-index-llms-litellm
 llama-index-readers-wikipedia
 llama-index-embeddings-openai
+# OpenTelemetry dependencies for trace export
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-llamaindex
+opentelemetry-semantic-conventions-ai
 wikipedia
 streamlit
 nltk

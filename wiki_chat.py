@@ -5,15 +5,27 @@ import os.path
 from dotenv import load_dotenv
 # Updated imports for LlamaIndex v0.10+
 from llama_index.core import VectorStoreIndex, Settings
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.litellm import LiteLLM
 from llama_index.readers.wikipedia import WikipediaReader
+
+# OpenTelemetry imports
+from opentelemetry.instrumentation.llamaindex import LlamaIndexInstrumentor
 
 load_dotenv()
 
+# Only instrument LlamaIndex once to avoid "already instrumented" error
+# The TracerProvider and exporter are automatically configured by opentelemetry-instrument
+if 'instrumented' not in st.session_state:
+    LlamaIndexInstrumentor().instrument()
+    st.session_state.instrumented = True
+
 storage_path = "./vectorstore"
 
-# Configure global settings instead of using ServiceContext (deprecated)
-Settings.llm = OpenAI(temperature=0.1, model="gpt-4-turbo-preview")
+# You can use any model supported by LiteLLM (OpenAI, Anthropic, Claude, etc.)
+Settings.llm = LiteLLM(
+    model="openai/gpt-4-turbo-preview",  # or "claude-3-sonnet-20240229", "gpt-3.5-turbo", etc.
+    temperature=0.1
+)
 
 # Use WikipediaReader directly - no need for download_loader
 loader = WikipediaReader()
