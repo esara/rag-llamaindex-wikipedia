@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: rag
-          image: esara/rag
+          image: esara/rag:litellm-openai
           ports:
             - containerPort: 8501
           env:
@@ -22,6 +22,14 @@ spec:
                 secretKeyRef:
                   key: OPENAI_API_KEY
                   name: rag-secret
+            - name: OTEL_SERVICE_NAME
+              value: llama-index-workflow-app
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: opentelemetry-collector:4317
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
