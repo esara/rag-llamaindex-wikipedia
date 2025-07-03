@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 DOCKER_REGISTRY = docker.io/esara
 DOCKER_IMAGE = rag
-DOCKER_TAG = latest
+DOCKER_TAG = litellm-gemini
 
 .PHONY: build
 
