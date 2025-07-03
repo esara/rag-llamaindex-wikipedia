@@ -7,8 +7,23 @@ from dotenv import load_dotenv
 from llama_index.core import Settings, StorageContext, VectorStoreIndex, load_index_from_storage
 from llama_index.llms.openai import OpenAI
 from llama_index.readers.wikipedia import WikipediaReader
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# OpenTelemetry imports
+from opentelemetry.instrumentation.google_genai import GoogleGenAiSdkInstrumentor
+from opentelemetry.instrumentation.llamaindex import LlamaIndexInstrumentor
+# Traceloop Import
+# from opentelemetry.instrumentation.google_generativeai import GoogleGenerativeAiInstrumentor
 
 load_dotenv()
+
+# Only instrument LlamaIndex once to avoid "already instrumented" error
+# The TracerProvider and exporter are automatically configured by opentelemetry-instrument
+if 'instrumented' not in st.session_state:
+    LlamaIndexInstrumentor().instrument()
+    GoogleGenAiSdkInstrumentor().instrument()
+#     GoogleGenerativeAiInstrumentor().instrument()
+    st.session_state.instrumented = True
 
 storage_path = "./vectorstore"
 WIKI_PAGES = ["Star Wars (film)", "Star Trek: The Original Series"]
@@ -25,7 +40,16 @@ wikipedia.set_user_agent(
 
 @st.cache_resource(show_spinner="Loading knowledge base...")
 def get_chat_engine():
-    Settings.llm = OpenAI(temperature=0.1, model="gpt-4o-mini")
+    Settings.embed_model = HuggingFaceEmbedding(
+        model_name="BAAI/bge-small-en-v1.5"
+    )
+
+    # Configure global settings instead of using ServiceContext (deprecated)
+    #Settings.llm = Gemini(
+    Settings.llm = GoogleGenAI(
+        model="gemini-3.5-flash",
+        # api_key="some key",  # uses GOOGLE_API_KEY env var by default
+    )
 
     docstore_path = os.path.join(storage_path, "docstore.json")
     if os.path.exists(docstore_path):

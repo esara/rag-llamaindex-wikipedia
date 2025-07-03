@@ -13,15 +13,23 @@ spec:
     spec:
       containers:
         - name: rag
-          image: esara/rag
+          image: esara/rag:gemini
           ports:
             - containerPort: 8501
           env:
-            - name: OPENAI_API_KEY
+            - name: GOOGLE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  key: OPENAI_API_KEY
+                  key: GOOGLE_API_KEY
                   name: rag-secret
+            - name: OTEL_SERVICE_NAME
+              value: llama-index-workflow-app
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: opentelemetry-collector:4317
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -40,4 +48,4 @@ type: Opaque
 metadata:
   name: rag-secret
 data:
-  OPENAI_API_KEY: "XYZ="
+  GOOGLE_API_KEY: "XYZ="
