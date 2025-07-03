@@ -1,9 +1,17 @@
 python-dotenv
-openai
+google-generativeai
 llama-index-core
-llama-index-llms-openai
+#llama-index-llms-gemini
+llama-index-llms-google-genai
 llama-index-readers-wikipedia
-llama-index-embeddings-openai
+llama-index-embeddings-huggingface
+# OpenTelemetry dependencies for trace export
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-llamaindex
+opentelemetry-instrumentation-google-genai
+#opentelemetry-instrumentation-google-generativeai
+opentelemetry-semantic-conventions-ai
 wikipedia
 streamlit
 nltk
