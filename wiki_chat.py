@@ -5,15 +5,39 @@ import os.path
 from dotenv import load_dotenv
 # Updated imports for LlamaIndex v0.10+
 from llama_index.core import VectorStoreIndex, Settings
-from llama_index.llms.openai import OpenAI
+# from llama_index.llms.gemini import Gemini
+from llama_index.llms.google_genai import GoogleGenAI
 from llama_index.readers.wikipedia import WikipediaReader
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# OpenTelemetry imports
+from opentelemetry.instrumentation.google_genai import GoogleGenAiSdkInstrumentor
+from opentelemetry.instrumentation.llamaindex import LlamaIndexInstrumentor
+# Traceloop Import
+# from opentelemetry.instrumentation.google_generativeai import GoogleGenerativeAiInstrumentor
 
 load_dotenv()
 
+# Only instrument LlamaIndex once to avoid "already instrumented" error
+# The TracerProvider and exporter are automatically configured by opentelemetry-instrument
+if 'instrumented' not in st.session_state:
+    LlamaIndexInstrumentor().instrument()
+    GoogleGenAiSdkInstrumentor().instrument()
+#     GoogleGenerativeAiInstrumentor().instrument()
+    st.session_state.instrumented = True
+
 storage_path = "./vectorstore"
 
+Settings.embed_model = HuggingFaceEmbedding(
+    model_name="BAAI/bge-small-en-v1.5"
+)
+
 # Configure global settings instead of using ServiceContext (deprecated)
-Settings.llm = OpenAI(temperature=0.1, model="gpt-4-turbo-preview")
+#Settings.llm = Gemini(
+Settings.llm = GoogleGenAI(
+    model="gemini-2.0-flash",
+    # api_key="some key",  # uses GOOGLE_API_KEY env var by default
+)
 
 # Use WikipediaReader directly - no need for download_loader
 loader = WikipediaReader()
